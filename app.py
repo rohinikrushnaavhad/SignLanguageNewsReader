@@ -102,12 +102,10 @@ if st.session_state.news_articles:
 
         news_options.append(title)
 
-
     selected_news = st.selectbox(
         "📰 Select News",
         news_options
     )
-
 
     st.session_state.news_input = selected_news
 
@@ -180,9 +178,7 @@ if st.button("🔊 Read News"):
             "🤟 Indian Sign Language"
         )
 
-
         words = cleaned_news.lower().split()
-
 
         for word, sign in zip(
             words,
@@ -238,7 +234,6 @@ if st.button("🔊 Read News"):
                     "🔤 Fingerspelling:",
                     clean_word
                 )
-
 
                 for letter in clean_word.upper():
 
