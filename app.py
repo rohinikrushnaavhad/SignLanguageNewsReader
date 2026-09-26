@@ -126,6 +126,7 @@ news = st.text_area(
 # -------------------------------------------------
 
 if st.button("🔊 Read News"):
+    st.write("Read News button clicked")
 
     if not news.strip():
 
