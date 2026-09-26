@@ -50,24 +50,42 @@ if "news_articles" not in st.session_state:
     st.session_state.news_articles = []
 
 
+# =================================================
+# GET LATEST NEWS
+# =================================================
+
 if st.button("📰 Get Latest News"):
 
-    articles = get_latest_news()
+    try:
 
-    if articles:
+        articles = get_latest_news()
 
-        st.session_state.news_articles = articles
+        if articles:
 
-        st.success(
-            "Latest news loaded successfully!"
+            st.session_state.news_articles = articles
+
+            st.success(
+                "Latest news loaded successfully!"
+            )
+
+        else:
+
+            st.warning(
+                "No news found."
+            )
+
+    except Exception as e:
+
+        st.error(
+            "❌ News API Error"
         )
 
-    else:
+        st.exception(e)
 
-        st.warning(
-            "No news found."
-        )
 
+# =================================================
+# SELECT NEWS
+# =================================================
 
 if st.session_state.news_articles:
 
@@ -97,21 +115,31 @@ news = st.text_area(
 )
 
 
-# -------------------------------------------------
+# =================================================
 # READ NEWS
-# -------------------------------------------------
+# =================================================
 
 if st.button("🔊 Read News"):
 
     st.write("Read News button clicked")
 
-    if not news.strip():
+    try:
 
-        st.warning(
-            "Please enter some news."
-        )
+        # -----------------------------------------
+        # CHECK NEWS
+        # -----------------------------------------
 
-    else:
+        if not news or not news.strip():
+
+            st.warning(
+                "Please enter some news."
+            )
+
+            st.stop()
+
+
+        st.write("✅ News received successfully")
+
 
         # -----------------------------------------
         # CLEAN NEWS
@@ -119,15 +147,24 @@ if st.button("🔊 Read News"):
 
         cleaned_news = clean_news(news)
 
-        st.write("✅ News processing completed")
+        st.write(
+            "✅ News processing completed"
+        )
 
         st.subheader("📰 News")
-        st.write(cleaned_news)
+
+        st.write(
+            cleaned_news
+        )
 
 
         # -----------------------------------------
         # AUDIO
         # -----------------------------------------
+
+        st.write(
+            "⏳ Generating audio..."
+        )
 
         audio_path = os.path.join(
             project_folder,
@@ -140,29 +177,46 @@ if st.button("🔊 Read News"):
             lang="en"
         )
 
-        tts.save(audio_path)
+        tts.save(
+            audio_path
+        )
 
-        st.write("✅ Audio generation completed")
+        st.write(
+            "✅ Audio generation completed"
+        )
 
-        st.subheader("🔊 Audio")
-        st.audio(audio_path)
+        st.subheader(
+            "🔊 Audio"
+        )
+
+        st.audio(
+            audio_path
+        )
 
 
         # -----------------------------------------
         # ISL SIGN MAPPING
         # -----------------------------------------
 
+        st.write(
+            "⏳ Creating sign sequence..."
+        )
+
         sign_sequence = convert_to_signs(
             cleaned_news
         )
 
-        st.write("✅ Sign mapping completed")
+        st.write(
+            "✅ Sign mapping completed"
+        )
 
         st.subheader(
             "🤟 Indian Sign Language"
         )
 
+
         words = cleaned_news.lower().split()
+
 
         for word, sign in zip(
             words,
@@ -174,6 +228,10 @@ if st.button("🔊 Read News"):
             )
 
 
+            # -------------------------------------
+            # KNOWN SIGN VIDEO
+            # -------------------------------------
+
             if sign.endswith(".mp4"):
 
                 video_path = os.path.join(
@@ -181,7 +239,9 @@ if st.button("🔊 Read News"):
                     sign
                 )
 
-                if os.path.exists(video_path):
+                if os.path.exists(
+                    video_path
+                ):
 
                     st.write(
                         "🤟 Sign:",
@@ -203,12 +263,17 @@ if st.button("🔊 Read News"):
                     )
 
 
+            # -------------------------------------
+            # FINGERSPELLING
+            # -------------------------------------
+
             else:
 
                 st.write(
                     "🔤 Fingerspelling:",
                     clean_word
                 )
+
 
                 for letter in clean_word.upper():
 
@@ -235,6 +300,20 @@ if st.button("🔊 Read News"):
                                 "A-Z sign not found: "
                                 + letter
                             )
+
+
+        st.success(
+            "🎉 News processing completed successfully!"
+        )
+
+
+    except Exception as e:
+
+        st.error(
+            "❌ Read News processing stopped because of an error."
+        )
+
+        st.exception(e)
 
 
 # =================================================
@@ -328,6 +407,7 @@ if uploaded_image is not None:
                 -1
             )
 
+
             prediction = svm_model.predict(
                 features
             )[0]
@@ -336,6 +416,7 @@ if uploaded_image is not None:
             predicted_letter = str(
                 prediction
             ).upper()
+
 
             st.success(
                 "Predicted Sign: "
