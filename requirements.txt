@@ -1,0 +1,7 @@
+streamlit==1.64.0
+gTTS==2.5.4
+requests==2.34.2
+joblib==1.6.0
+numpy==2.5.3
+scikit-image==0.26.0
+scikit-learn==1.9.1
