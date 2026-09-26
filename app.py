@@ -13,10 +13,6 @@ from skimage.transform import resize
 from skimage.feature import hog
 
 
-# -------------------------------------------------
-# PAGE SETTINGS
-# -------------------------------------------------
-
 st.set_page_config(
     page_title="AI-Based Sign Language News Reader",
     page_icon="🤟"
@@ -28,10 +24,6 @@ st.write(
     "Convert news into audio and Indian Sign Language videos."
 )
 
-
-# -------------------------------------------------
-# PROJECT PATHS
-# -------------------------------------------------
 
 project_folder = os.path.dirname(
     os.path.abspath(__file__)
@@ -51,20 +43,12 @@ model_path = os.path.join(
 )
 
 
-# -------------------------------------------------
-# NEWS INPUT
-# -------------------------------------------------
-
 if "news_input" not in st.session_state:
     st.session_state.news_input = ""
 
 if "news_articles" not in st.session_state:
     st.session_state.news_articles = []
 
-
-# -------------------------------------------------
-# GET LATEST NEWS
-# -------------------------------------------------
 
 if st.button("📰 Get Latest News"):
 
@@ -84,10 +68,6 @@ if st.button("📰 Get Latest News"):
             "No news found."
         )
 
-
-# -------------------------------------------------
-# SELECT NEWS
-# -------------------------------------------------
 
 if st.session_state.news_articles:
 
@@ -110,10 +90,6 @@ if st.session_state.news_articles:
     st.session_state.news_input = selected_news
 
 
-# -------------------------------------------------
-# MANUAL NEWS INPUT
-# -------------------------------------------------
-
 news = st.text_area(
     "📰 Enter News",
     value=st.session_state.news_input,
@@ -126,6 +102,7 @@ news = st.text_area(
 # -------------------------------------------------
 
 if st.button("🔊 Read News"):
+
     st.write("Read News button clicked")
 
     if not news.strip():
@@ -141,6 +118,8 @@ if st.button("🔊 Read News"):
         # -----------------------------------------
 
         cleaned_news = clean_news(news)
+
+        st.write("✅ News processing completed")
 
         st.subheader("📰 News")
         st.write(cleaned_news)
@@ -163,6 +142,8 @@ if st.button("🔊 Read News"):
 
         tts.save(audio_path)
 
+        st.write("✅ Audio generation completed")
+
         st.subheader("🔊 Audio")
         st.audio(audio_path)
 
@@ -175,6 +156,8 @@ if st.button("🔊 Read News"):
             cleaned_news
         )
 
+        st.write("✅ Sign mapping completed")
+
         st.subheader(
             "🤟 Indian Sign Language"
         )
@@ -186,15 +169,10 @@ if st.button("🔊 Read News"):
             sign_sequence
         ):
 
-            # Remove punctuation
             clean_word = word.strip(
                 ".,!?;:\"'()[]{}"
             )
 
-
-            # -------------------------------------
-            # KNOWN SIGN VIDEO
-            # -------------------------------------
 
             if sign.endswith(".mp4"):
 
@@ -224,10 +202,6 @@ if st.button("🔊 Read News"):
                         + sign
                     )
 
-
-            # -------------------------------------
-            # UNKNOWN WORD
-            # -------------------------------------
 
             else:
 
@@ -291,10 +265,6 @@ uploaded_image = st.file_uploader(
 
 if uploaded_image is not None:
 
-    # ---------------------------------------------
-    # DISPLAY IMAGE
-    # ---------------------------------------------
-
     st.image(
         uploaded_image,
         caption="Uploaded Sign Image",
@@ -306,10 +276,6 @@ if uploaded_image is not None:
 
         try:
 
-            # -------------------------------------
-            # LOAD SVM MODEL
-            # -------------------------------------
-
             model_data = joblib.load(
                 model_path
             )
@@ -319,18 +285,10 @@ if uploaded_image is not None:
             classes = model_data["classes"]
 
 
-            # -------------------------------------
-            # READ IMAGE
-            # -------------------------------------
-
             image = imread(
                 uploaded_image
             )
 
-
-            # -------------------------------------
-            # CONVERT TO GRAYSCALE
-            # -------------------------------------
 
             if image.ndim == 3:
 
@@ -349,20 +307,12 @@ if uploaded_image is not None:
                     image = image / 255.0
 
 
-            # -------------------------------------
-            # RESIZE
-            # -------------------------------------
-
             image = resize(
                 image,
                 (128, 128),
                 anti_aliasing=True
             )
 
-
-            # -------------------------------------
-            # HOG FEATURES
-            # -------------------------------------
 
             features = hog(
                 image,
@@ -373,10 +323,6 @@ if uploaded_image is not None:
             )
 
 
-            # -------------------------------------
-            # PREDICTION
-            # -------------------------------------
-
             features = features.reshape(
                 1,
                 -1
@@ -386,10 +332,6 @@ if uploaded_image is not None:
                 features
             )[0]
 
-
-            # -------------------------------------
-            # RESULT
-            # -------------------------------------
 
             predicted_letter = str(
                 prediction
